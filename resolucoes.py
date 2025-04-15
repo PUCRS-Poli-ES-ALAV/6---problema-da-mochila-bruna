@@ -69,17 +69,22 @@ def backPackPD(N, C, itens):
 
 #============================================================
 def edit_distance_recursive(a, b):
+    count = [0]
+
     def dist(i, j):
+        count[0] += 1
         if i == 0: return j
         if j == 0: return i
         if a[i - 1] == b[j - 1]:
             return dist(i - 1, j - 1)
         return 1 + min(
-            dist(i - 1, j),    # remoção
-            dist(i, j - 1),    # inserção
-            dist(i - 1, j - 1) # substituição
+            dist(i - 1, j),
+            dist(i, j - 1), 
+            dist(i - 1, j - 1) 
         )
-    return dist(len(a), len(b))
+
+    result = dist(len(a), len(b))
+    return result, count[0]
 
 def edit_distance_dp(a, b):
     m, n = len(a), len(b)
@@ -135,7 +140,6 @@ def testar_fibonacci():
 def testar_mochila():
     print("\n=== Mochila ===")
 
-    # Caso 1
     capacidade1 = 165
     pesos1 = [23, 31, 29, 44, 53, 38, 63, 85, 89, 82]
     valores1 = [92, 57, 49, 68, 60, 43, 67, 84, 87, 72]
@@ -149,7 +153,6 @@ def testar_mochila():
     print(f"Força Bruta→ Valor ótimo: {res_bf_1} | Iterações: {count_bf_1} (Valor esperado: 309)")
     print("")
 
-    # Caso 2
     capacidade2 = 190
     pesos2 = [56, 59, 80, 64, 75, 17]
     valores2 = [50, 50, 64, 46, 50, 5]
@@ -166,14 +169,31 @@ def testar_edicao():
     print("\n=== Distância de Edição ===")
     casos = [
         ("Casablanca", "Portentoso"),
-        ("Maven, a Yiddish word meaning accumulator of knowledge, began as an attempt to simplify the build processes in the Jakarta Turbine project.",
-         "This post is not about deep learning. But it could be might as well. This is the power of kernels. They are universally applicable in any machine learning algorithm.")
+        ("Maven, a Yiddish word meaning accumulator of knowledge, began as an attempt to " +
+   			"simplify the build processes in the Jakarta Turbine project. There were several" + 
+   			" projects, each with their own Ant build files, that were all slightly different." +
+   			"JARs were checked into CVS. We wanted a standard way to build the projects, a clear "+ 
+   			"definition of what the project consisted of, an easy way to publish project information" +
+   			"and a way to share JARs across several projects. The result is a tool that can now be" +
+   			"used for building and managing any Java-based project. We hope that we have created " +
+   			"something that will make the day-to-day work of Java developers easier and generally help " +
+   			"with the comprehension of any Java-based project.",
+         "This post is not about deep learning. But it could be might as well. This is the power of " +
+   			"kernels. They are universally applicable in any machine learning algorithm. Why you might" +
+   			"ask? I am going to try to answer this question in this article." + 
+   		        "Go to the profile of Marin Vlastelica Pogančić" + 
+   		        "Marin Vlastelica Pogančić Jun")
     ]
 
-    for s1, s2 in casos:
-        dist, iters = edit_distance_dp(s1, s2)
-        print(f"Strings: {s1[:20]}... x {s2[:20]}...")
-        print(f"Distância: {dist} | Iterações: {iters}\n")
+    for idx, (s1, s2) in enumerate(casos, 1):
+        print(f"\n--- Caso {idx} ---")
+        print(f"Strings: {s1[:30]}... x {s2[:30]}...")
+
+        dist_rec, iter_rec = edit_distance_recursive(s1, s2) if len(s1) < 20 and len(s2) < 20 else ("(Muito lento)", "(Muito alto)")
+        dist_dp, iter_dp = edit_distance_dp(s1, s2)
+
+        print(f"[Recursivo]     Distância: {dist_rec} | Iterações: {iter_rec}")
+        print(f"[Prog. Dinâm.] Distância: {dist_dp} | Iterações: {iter_dp}")
 
 if __name__ == "__main__":
     testar_fibonacci()
