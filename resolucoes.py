@@ -68,6 +68,40 @@ def backPackPD(N, C, itens):
     return maxTab[N][C], count
 
 #============================================================
+def edit_distance_recursive(a, b):
+    def dist(i, j):
+        if i == 0: return j
+        if j == 0: return i
+        if a[i - 1] == b[j - 1]:
+            return dist(i - 1, j - 1)
+        return 1 + min(
+            dist(i - 1, j),    # remoção
+            dist(i, j - 1),    # inserção
+            dist(i - 1, j - 1) # substituição
+        )
+    return dist(len(a), len(b))
+
+def edit_distance_dp(a, b):
+    m, n = len(a), len(b)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    iter_count = 0
+
+    for i in range(m + 1):
+        dp[i][0] = i
+    for j in range(n + 1):
+        dp[0][j] = j
+
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            iter_count += 1
+            if a[i - 1] == b[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1]
+            else:
+                dp[i][j] = 1 + min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1])
+
+    return dp[m][n], iter_count
+
+#============================================================
 def testar_fibonacci():
     valores = [4, 8, 16, 32, 128, 1000, 10000]
     print("\n=== Fibonacci ===")
@@ -128,5 +162,20 @@ def testar_mochila():
     print(f"PD         → Valor ótimo: {res_pd_2} | Iterações: {count_pd_2}")
     print(f"Força Bruta→ Valor ótimo: {res_bf_2} | Iterações: {count_bf_2} (Valor esperado: 150)")
 
-testar_fibonacci()
-testar_mochila()
+def testar_edicao():
+    print("\n=== Distância de Edição ===")
+    casos = [
+        ("Casablanca", "Portentoso"),
+        ("Maven, a Yiddish word meaning accumulator of knowledge, began as an attempt to simplify the build processes in the Jakarta Turbine project.",
+         "This post is not about deep learning. But it could be might as well. This is the power of kernels. They are universally applicable in any machine learning algorithm.")
+    ]
+
+    for s1, s2 in casos:
+        dist, iters = edit_distance_dp(s1, s2)
+        print(f"Strings: {s1[:20]}... x {s2[:20]}...")
+        print(f"Distância: {dist} | Iterações: {iters}\n")
+
+if __name__ == "__main__":
+    testar_fibonacci()
+    testar_mochila()
+    testar_edicao()
